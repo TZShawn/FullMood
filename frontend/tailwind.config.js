@@ -11,7 +11,9 @@ module.exports = {
       'back-brown': '#b08968',
       'mid-brown' : '#ebcfbc',
       'green-grey' : '#cfd2cd',
-      'palette-green': '#ADC280'
+      'palette-green': '#ADC280',
+      'paper-brown': '#D5B59C',
+      'background-brown': '#B18C65'
     }
   },
   plugins: [],
