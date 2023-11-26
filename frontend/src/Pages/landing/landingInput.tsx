@@ -62,6 +62,7 @@ const Login: React.FC<ILogin> = ({ isModalOpen, setIsModalOpen }) => {
           <TextField
             id="outlined-basic"
             label="Password"
+            type="password"
             variant="outlined"
             onChange={(e) => setPassword(e.target.value)}
           />
