@@ -1,66 +1,95 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/Button";
 import InfoIcon from "@mui/icons-material/Info";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import "./Entries.css";
-import { Icon } from "@mui/material";
+import { Icon, alpha, styled } from "@mui/material";
 import IOSSwitch from "../../components/IOSToggle";
 import MyModal from "../../components/myModal";
 import EntryView from "../../components/entryView";
 import NavBar from "../../NavBar";
+import { pink } from '@mui/material/colors';
+import Switch from '@mui/material/Switch';
+import axios from "axios";
+import { useSelector } from "react-redux";
+
+axios.defaults.baseURL = "http://localhost:4000";
 
 interface IEntry {
   date: string;
   title: string;
   entry: string;
+  mood: string;
+  swatch: boolean
 }
+
+const PinkSwitch = styled(Switch)(({ theme }) => ({
+  '& .MuiSwitch-switchBase.Mui-checked': {
+    color: pink[600],
+    '&:hover': {
+      backgroundColor: alpha(pink[600], theme.palette.action.hoverOpacity),
+    },
+  },
+  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+    backgroundColor: pink[600],
+  },
+}));
 
 interface IEntries {
   entries: IEntry[];
 }
 
-export const sampleEntry: IEntry = {
-  date: "2023-01-01",
-  title: "title1",
-  entry: "Sample content",
-};
+// export const sampleEntry: IEntry = {
+//   date: "2023-01-01",
+//   title: "title1",
+//   entry: "Sample content",
+// };
 
-export const samplEntry: IEntry = {
-  date: "2023-02-01",
-  title: "title1",
-  entry: "Sample helo content",
-};
+// export const samplEntry: IEntry = {
+//   date: "2023-02-01",
+//   title: "title1",
+//   entry: "Sample helo content",
+// };
 
-export const sampEntry: IEntry = {
-  date: "2023-02-01",
-  title: "title1",
-  entry: "Sample helo content",
-};
+// export const sampEntry: IEntry = {
+//   date: "2023-02-01",
+//   title: "title1",
+//   entry: "Sample helo content",
+// };
 
-export const samEntry: IEntry = {
-  date: "2023-02-01",
-  title: "title1",
-  entry: "Sample helo content",
-};
+// export const samEntry: IEntry = {
+//   date: "2023-02-01",
+//   title: "title1",
+//   entry: "Sample helo content",
+// };
 
-const EntryCard: React.FC<IEntry> = ({ date, title, entry }) => {
+const EntryCard: React.FC<IEntry> = ({ date, title, entry, mood, swatch }) => {
+
   const [isViewOpen, setViewOpen] = useState(false);
   const handleOpenView = () => {
     setViewOpen(true);
   };
 
+  let color = ""
+
+  if (mood.includes("Negative") && swatch) {
+    color = "bg-red-300"
+  } else if (mood.includes("Positive")) {
+    color = "bg-green-300"
+  }
+
   const handleCloseView = () => {
     setViewOpen(false);
   };
   return (
-    <div className="w-full h-1/6 pt-3 m-auto">
-      <div className="w-full h-full m-auto flex rounded-3xl border-4 box-shadow">
+    <div className={`w-full h-1/6 pt-3 m-auto`}>
+      <div className={`w-full h-full m-auto flex rounded-3xl border-4 box-shadow ${color}`}>
         <div className="w-3/12 flex p-2 items-center justify-center">
           {date}
         </div>
-        <div className="w-7/12 flex items-center justify-center">{entry}</div>
+        <div className="w-7/12 flex items-center justify-center">{title}</div>
         <div className="w-2/12 flex items-center justify-center">
           <div
             onClick={handleOpenView}
@@ -81,7 +110,38 @@ const EntryCard: React.FC<IEntry> = ({ date, title, entry }) => {
   );
 };
 
-const Entries: React.FC<IEntries> = ({ entries }) => {
+const Entries: React.FC<{}> = ({}) => {
+
+  const { profile } = useSelector((state: any) => state.profile);
+
+  const [togSwitch, setTogSwitch] = React.useState(false)
+
+  const [userData, setUserData] = React.useState<
+    | {
+        todo: any[];
+        entrys: any[];
+        negatives: any[];
+        positives: any[];
+        username: string;
+      }
+    | undefined
+  >(undefined);
+
+  useEffect(() => {
+    axios
+      .post("/getprofile", { name: profile })
+      .then((res) => {
+        if ((res.status = 200)) {
+          console.log(res.data);
+          setUserData(res.data);
+        } else {
+          console.log(res.data);
+        }
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
+  const entries = userData?.entrys ?? []
   // Axios call to BE
   const [isModalOpen, setModalOpen] = useState(false);
 
@@ -92,7 +152,6 @@ const Entries: React.FC<IEntries> = ({ entries }) => {
   const handleCloseModal = () => {
     setModalOpen(false);
   };
-
   return (
     <div className="w-full h-screen overflow-hidden">
       <NavBar current="entries" />
@@ -106,7 +165,7 @@ const Entries: React.FC<IEntries> = ({ entries }) => {
             </div>
             <div className="flex-1" />
             <div className="pb-3">
-              <IOSSwitch />
+              <PinkSwitch onClick={(e) => setTogSwitch(!togSwitch)} />
             </div>
             <div className="btn ">
               <IconButton onClick={handleOpenModal}>
@@ -124,7 +183,7 @@ const Entries: React.FC<IEntries> = ({ entries }) => {
             <div className="w-full h-full m-auto overflow-y-auto">
               <div className="w-11/12 h-full m-auto mb-5">
                 {entries.map((entry, index) => (
-                  <EntryCard key={index} {...entry} />
+                  <EntryCard date={entry.date.toString()} title={entry.title} entry={entry.entry} mood={entry.mood} swatch={togSwitch}/>
                 ))}
               </div>
             </div>

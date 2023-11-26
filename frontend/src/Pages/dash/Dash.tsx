@@ -111,7 +111,30 @@ const Dash: React.FC<{}> = () => {
 
   const entryData = userData?.entrys ?? []
 
+  let moods = entryData.map(entr => entr.mood)
+  
+  if (moods.length < 20) {
+    moods = moods.slice(0, 20)
+  }
 
+  let numbers = 0
+
+  moods.forEach((mood) => {
+    if (mood.includes('Negative')) {
+      numbers += 0.25
+    } else if (mood.includes("Neutral")) {
+      console.log("asdsa")
+      numbers += 0.5
+    } else if (mood.includes('Positive')) {
+      numbers += 0.75
+    } else if (mood.includes('Super Positive')) {
+      numbers += 1
+    }
+  })
+
+  numbers = numbers / moods.length
+
+  console.log(numbers)
 
   const options = {
     series: [
@@ -165,13 +188,13 @@ const Dash: React.FC<{}> = () => {
           rotate: "tangential",
           formatter: function (value: number) {
             if (value === 0.875) {
-              return "Grade A";
+              return "Super Positive";
             } else if (value === 0.625) {
-              return "Grade B";
+              return "Positive";
             } else if (value === 0.375) {
-              return "Grade C";
+              return "Bad";
             } else if (value === 0.125) {
-              return "Grade D";
+              return "Super Bad";
             }
             return "";
           },
@@ -191,8 +214,8 @@ const Dash: React.FC<{}> = () => {
         },
         data: [
           {
-            value: 0.7,
-            name: "Grade Rating",
+            value: numbers,
+            name: "Mood Rating",
           },
         ],
       },

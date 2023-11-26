@@ -4,6 +4,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import {TextField} from '@mui/material';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 interface MyModalProps {
   open: boolean;
@@ -11,21 +12,26 @@ interface MyModalProps {
   onClose: () => void;
 }
 
+axios.defaults.baseURL = "http://localhost:4000";
+
 const MyModal: React.FC<MyModalProps> = ({ open, setModalOpen, onClose }) => {
   const [title, setTitle] = React.useState("")
   const [entry, setEntry] = React.useState("")
+
+  const { profile } = useSelector((state: any) => state.profile);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
-      // const formData = {
-      //   //name: //todo,
-      //   title: title,
-      //   entry: entry,
-      // };
+      const formData = {
+        name: profile,
+        title: entry,
+        entry: title,
+      };
+      console.log(formData)
 
-      // const response = await axios.post('/entry', formData)
+      axios.post('/entry', formData)
       setModalOpen(false)
 
     } catch (error) {

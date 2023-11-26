@@ -6,7 +6,6 @@ import {
   Route,
 } from "react-router-dom";
 import Landing from './Pages/landing/Landing';
-import {samplEntry, sampleEntry, sampEntry, samEntry } from './Pages/entries/Entries';
 import Entries from './Pages/entries/Entries'
 import Dash from './Pages/dash/Dash';
 
@@ -18,7 +17,7 @@ function App() {
         <Routes>
             <Route path="/" element={<Landing/>} />
             <Route path="/dashboard" element={<Dash/>} />           
-            <Route path="/entries" element={<Entries entries={[sampleEntry, samplEntry, sampEntry, samEntry]} />} />
+            <Route path="/entries" element={<Entries />} />
         </Routes>
       </BrowserRouter>
     </div>
