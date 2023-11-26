@@ -54,7 +54,6 @@ router.post("/entry", async (req, res) => {
 
     const userRef = snapshot.docs[0].ref
     const data = snapshot.docs[0].data()
-    console.log(data)
     data.entrys.push({entry: req.body.entry, mood: rating, date: new Date()})
     data.negatives = data.negatives.concat(bad)
     data.postiives = data.postiives.concat(good)
@@ -65,5 +64,53 @@ router.post("/entry", async (req, res) => {
     console.log(error);
   }
 });
+
+router.post('/gettodo', async(req, res) => {
+  const dataRef = db.collection("UserData");
+  const snapshot = await dataRef.where("username", "==", req.body.name).get();
+
+  if (snapshot.empty) {
+    return res.status(404).json({ error: "User not found" });
+  }
+  const data = snapshot.docs[0].data()
+  return res.status(200).json(data.todo)
+})
+
+router.post('/getprofile', async(req, res) => {
+  const dataRef = db.collection("UserData");
+  const snapshot = await dataRef.where("username", "==", req.body.name).get();
+
+  if (snapshot.empty) {
+    return res.status(404).json({ error: "User not found" });
+  }
+  const data = snapshot.docs[0].data()
+  return res.status(200).json(data)
+})
+
+router.post('/todo', async (req, res) => {
+  const dataRef = db.collection("UserData");
+  const snapshot = await dataRef.where("username", "==", req.body.name).get();
+
+  if (snapshot.empty) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  const userRef = snapshot.docs[0].ref
+  const data = snapshot.docs[0].data()
+  if (req.body.delete) {
+    let todos = data.todo
+    for (let i = 0; i < todos.length; i++) {
+      if (todos[i].name == req.body.todo) {
+        todos.splice(i, 1)
+      }
+    }
+    data.todo = todos
+  } else {
+    data.todo.push({name: req.body.todo, done: false})
+  }
+  userRef.update(data)
+  return res.status(200).json(data)
+
+})
 
 module.exports = router;

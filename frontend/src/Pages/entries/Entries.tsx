@@ -95,7 +95,7 @@ const Entries: React.FC<IEntries> = ({ entries }) => {
 
   return (
     <div className="w-full h-screen overflow-hidden">
-      <NavBar />
+      <NavBar current="entries" />
       <div className="row h-[93.7vh] w-full">
         <div className="row h-1/6 flex w-full">
           <div className="h-full w-1/12 flex"></div>
@@ -106,20 +106,14 @@ const Entries: React.FC<IEntries> = ({ entries }) => {
             </div>
             <div className="flex-1" />
             <div className="pb-3">
-              <FormControlLabel
-                value="start"
-                control={<IOSSwitch />}
-                label={<div className="pr-2 font-sans">Show Bad Days</div>}
-                labelPlacement="start"
-              />
+              <IOSSwitch />
             </div>
             <div className="btn ">
-              <IconButton onClick={handleOpenModal}>
+              <IconButton>
                 <AddCircleOutlineIcon
                   style={{ fontSize: "3rem", color: "#65C466" }}
                 />
               </IconButton>
-              <MyModal open={isModalOpen} onClose={handleCloseModal} />
             </div>
           </div>
           <div className="h-full w-1/12 flex"></div>
