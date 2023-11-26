@@ -4,40 +4,67 @@ import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import EChartsReact from "echarts-for-react";
-import { Checkbox } from "@mui/material";
+import { Checkbox, TextField } from "@mui/material";
 
-import DeleteIcon from '@mui/icons-material/Delete';
+import CheckIcon from "@mui/icons-material/Check";
+import ClearIcon from "@mui/icons-material/Clear";
 
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 interface IToDoCard {
-  text: string,
-  id: number,
-  done: boolean
+  text: string;
+  id: number;
+  done: boolean;
 }
 
-const ToDoCard: React.FC<IToDoCard> = ({text, id, done}) => {
-  const [isChecked, setIsChecked] = React.useState(done)
+const ToDoCard: React.FC<IToDoCard> = ({ text, id, done }) => {
+  const [isChecked, setIsChecked] = React.useState(done);
 
   return (
     <div className="flex">
-      <Checkbox checked={isChecked} onChange={(e) => {setIsChecked(!isChecked)}}/>
+      <Checkbox
+        checked={isChecked}
+        onChange={(e) => {
+          setIsChecked(!isChecked);
+        }}
+      />
       <div className="pt-2">{text}</div>
-      <div className="flex-1"/>
-      {isChecked ? <DeleteIcon />: ""}
+      <div className="flex-1" />
+      {isChecked ? <DeleteIcon /> : ""}
     </div>
-  )
-}
+  );
+};
+
+const AddTodo: React.FC<{ todoEdit: boolean; setTodoEdit: any }> = ({
+  todoEdit,
+  setTodoEdit,
+}) => {
+  const [text, setText] = React.useState("");
+
+  const handleCheckClick = () => {
+
+  }
+
+  const handleClearClick = () => {
+     setTodoEdit(!todoEdit)
+  }
+  return(
+  <div className="w-full flex px-4">
+    <input type="textfield" className="w-full border-2 border-black bg-paper-brown outline-none" onChange={(e) => setText(e.target.value)}/>
+    <div onClick={(e) => handleCheckClick()}><CheckIcon /></div>
+    <div onClick={(e) => handleClearClick()}><ClearIcon /></div>
+  </div>);
+};
 
 const Dash: React.FC<{}> = () => {
-
-
   const todoItems = [
-    {text: "Work out1", done: false},
-    {text: "Work out2", done: true},
-    {text: "Work out3", done: false},
-    {text: "Work out4", done: false},
-    {text: "Work out5", done: false},
-    {text: "Work out6", done: false},
-  ]
+    { text: "Work out1", done: false },
+    { text: "Work out2", done: true },
+    { text: "Work out3", done: false },
+    { text: "Work out4", done: false },
+    { text: "Work out5", done: false },
+    { text: "Work out6", done: false },
+  ];
 
   const options = {
     series: [
@@ -125,9 +152,10 @@ const Dash: React.FC<{}> = () => {
     ],
   };
 
-  const happyStuff: string[] = []
-  const sadStuff: string[] = []
+  const happyStuff: string[] = [];
+  const sadStuff: string[] = [];
 
+  const [todoEdit, setTodoEdit] = React.useState(false);
   return (
     <div className="w-full h-screen bg-background-brown">
       <div className="flex h-4/7 pt-16 px-16">
@@ -154,27 +182,31 @@ const Dash: React.FC<{}> = () => {
               Here are some things that made you happy!
             </div>
             {happyStuff.map((stuf) => {
-              return (
-                <div>{stuf}</div>
-              )
+              return <div>{stuf}</div>;
             })}
             <div className="p-3 font-semibold text-lg">
               Here are some things that made you Sad
             </div>
             {sadStuff.map((stuf) => {
-              return (
-                <div>{stuf}</div>
-              )
+              return <div>{stuf}</div>;
             })}
           </div>
         </div>
         <div className="w-4/12 m-2 bg-paper-brown rounded-lg border-4 overflow-y-auto border-black">
           <div className="font-semibold text-lg p-3">Help Todo List</div>
           {todoItems.map((tod, key) => {
-            return (
-            <ToDoCard text={tod.text} id={key} done={tod.done} />
-            )
+            return <ToDoCard text={tod.text} id={key} done={tod.done} />;
           })}
+          {!todoEdit ? (
+            <div
+              className="w-full text-center mb-2 cursor-pointer hover:bg-mid-brown"
+              onClick={(e) => setTodoEdit(!todoEdit)}
+            >
+              <AddCircleOutlineIcon />
+            </div>
+          ) : (
+            <AddTodo todoEdit={todoEdit} setTodoEdit={setTodoEdit} />
+          )}
         </div>
       </div>
     </div>
