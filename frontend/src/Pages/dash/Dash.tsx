@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -15,6 +15,7 @@ import NavBar from "../../NavBar";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import EntryView from "../../components/entryView";
 
 axios.defaults.baseURL = "http://localhost:4000";
 
@@ -27,6 +28,13 @@ interface IToDoCard {
 const ToDoCard: React.FC<IToDoCard> = ({ text, id, done }) => {
   const [isChecked, setIsChecked] = React.useState(done);
 
+  const handleClick = (text: string) => {
+    const { profile } = useSelector((state: any) => state.profile);
+
+    console.log(text)
+    axios.post('/todo', {todo: text, delete: true, name: profile})
+  }
+
   return (
     <div className="flex">
       <Checkbox
@@ -37,12 +45,14 @@ const ToDoCard: React.FC<IToDoCard> = ({ text, id, done }) => {
       />
       <div className="pt-2">{text}</div>
       <div className="flex-1" />
+      <div className="pt-2" onClick={(e) => {handleClick(text)}}>
       {isChecked ? <DeleteIcon /> : ""}
+      </div>
     </div>
   );
 };
 
-const AddTodo: React.FC<{ todoEdit: boolean; setTodoEdit: any }> = ({
+const AddTodo: React.FC<{ todoEdit: boolean; setTodoEdit: any }> = ({ 
   todoEdit,
   setTodoEdit,
 }) => {
@@ -135,7 +145,7 @@ const Dash: React.FC<{}> = () => {
   numbers = numbers / moods.length
 
   console.log(numbers)
-
+  const [isViewOpen, setViewOpen] = useState(false);
   const options = {
     series: [
       {
@@ -221,11 +231,28 @@ const Dash: React.FC<{}> = () => {
       },
     ],
   };
+  let date = ""
+  let entry = ""
+  let title = ""
   const todoItems = userData?.todo ?? [];
   const happyStuff: string[] = userData?.positives ?? [];
   const sadStuff: string[] = userData?.negatives ?? [];
-
+  const [selectedDate, setSelectedDate] = React.useState("")
   const [todoEdit, setTodoEdit] = React.useState(false);
+
+  const entries = userData?.entrys ?? []
+  let idx = -1 
+  let dateObj = new Date();
+  for (let i = 0; i < entries.length; ++i) {
+    if (entries[i].date == selectedDate) {
+      idx = i
+      break
+    }
+  }
+  date = entries[idx]?.date ?? ""
+  entry = entries[idx]?.entry ?? ""
+  title = entries[idx]?.title ?? ""
+console.log(date, entry, title)
   return (
     <div>
       <NavBar current="dashboard" />
@@ -241,7 +268,14 @@ const Dash: React.FC<{}> = () => {
             <div className="font-semibold text-lg p-3 pb-0">Calendar View</div>
             <div className="w-full">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateCalendar />
+                <DateCalendar onChange={(e) => {
+                  // @ts-ignore
+                  let value = String(e.$d).split(' ')
+                  const finalDate = value[1]+"/"+value[2]+"/"+value[3]
+                  setSelectedDate(finalDate)
+
+                  setViewOpen(true)
+                }}/>
               </LocalizationProvider>
             </div>
           </div>
@@ -282,6 +316,13 @@ const Dash: React.FC<{}> = () => {
           </div>
         </div>
       </div>
+      <EntryView
+            open={isViewOpen}
+            date={date}
+            entry={entry}
+            title={title}
+            onClose={() => setViewOpen(false)}
+          />
     </div>
   );
 };
