@@ -12,6 +12,7 @@ module.exports = {
       'mid-brown' : '#ebcfbc',
       'green-grey' : '#cfd2cd',
       'palette-green': '#ADC280',
+      'off-white': '#DFE0DE',
       'paper-brown': '#D5B59C',
       'background-brown': '#B18C65'
     }

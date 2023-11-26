@@ -24,16 +24,13 @@ const Landing: React.FC<{}> = () => {
                 <em className="text-palette-green stroke-text">mood</em>
               </div>
             </div>
-            <div className="text-lg font-semibold text-left leading-normal pt-12 pr-8">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-              sunt in culpa qui officia deserunt mollit anim id est laborum
+            <div className="text-lg font-semibold text-off-white text-left leading-normal pt-12 pr-8">
+              After a bad day, we sometimes feel like we can't be happy again.<br></br>
+              <br></br>But our mission is to change that. 
+              <br></br>
+              <br></br>Full<em className="text-palette-green">mood</em> aims to remind users about their good days, while enabling them to lead a life of self-improvement.
             </div>
-            <div className="py-4 px-12 font-bold text-white bg-paper-brown rounded-[30px] w-fit mt-3 hover:bg-mid-brown" onClick={(e) => setIsModalOpen(true)}>
+            <div className="py-4 px-12 font-bold text-white bg-paper-brown rounded-[30px] w-fit mt-5 hover:bg-mid-brown" onClick={(e) => setIsModalOpen(true)}>
               Login/Sign in
             </div>
           </div>

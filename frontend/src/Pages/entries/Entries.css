@@ -1,6 +1,8 @@
 
 /* styles.css */
-
+.hover-effect:hover {
+    background-color: #f0f0f0; /* Set your desired hover color */
+  }
 /* Scrollbar Track */
 ::-webkit-scrollbar {
     width: 12px; /* Set the width of the scrollbar */
