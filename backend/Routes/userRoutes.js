@@ -16,7 +16,8 @@ router.post("/user", async (req, res) => {
     const userDataCreation = {
       username: req.body.Name,
       entrys: [],
-      mood: [],
+      negatives: [],
+      positives: [],
       todo: [],
     }
     console.log("RAN")
@@ -27,7 +28,7 @@ router.post("/user", async (req, res) => {
   }
 });
 
-router.get("/user", async (req, res) => {
+router.post("/usercheck", async (req, res) => {
   const { name } = req.body;
   const userRef = db.collection("Users");
   const snapshot = await userRef.where("Name", "==", name).get();
@@ -37,9 +38,11 @@ router.get("/user", async (req, res) => {
     return res.status(404).json({ error: "User not found" });
   }
 
-  const user = snapshot.docs[0].data();
-
-  return res.json({ password: user.Password });
+  const user = snapshot.docs[0].data(); 
+  if (req.body.password === user.Password){ 
+    return res.json({status: "Success"})
+  } 
+  return res.json({ status: "Failed" });
 });
 
 module.exports = router;
