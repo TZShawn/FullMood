@@ -125,8 +125,8 @@ const Dash: React.FC<{}> = () => {
 
   let moods = entryData.map(entr => entr.mood)
 
-  if (moods.length < 20) {
-    moods = moods.slice(0, 20)
+  if (moods.length < 7) {
+    moods = moods.slice(0, 7)
   }
 
   let numbers = 0
