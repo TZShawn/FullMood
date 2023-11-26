@@ -109,11 +109,12 @@ const Entries: React.FC<IEntries> = ({ entries }) => {
               <IOSSwitch />
             </div>
             <div className="btn ">
-              <IconButton>
+              <IconButton onClick={handleOpenModal}>
                 <AddCircleOutlineIcon
                   style={{ fontSize: "3rem", color: "#65C466" }}
                 />
               </IconButton>
+              <MyModal open={isModalOpen} onClose={handleCloseModal}/>
             </div>
           </div>
           <div className="h-full w-1/12 flex"></div>
