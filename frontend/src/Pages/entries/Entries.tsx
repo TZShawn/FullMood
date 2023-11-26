@@ -72,7 +72,7 @@ const EntryCard: React.FC<IEntry> = ({ date, title, entry, mood, swatch }) => {
     setViewOpen(true);
   };
 
-  let color = ""
+  let color = "bg-slate-200"
 
   if (mood.includes("Negative") && swatch) {
     color = "bg-red-300"
@@ -155,12 +155,12 @@ const Entries: React.FC<{}> = ({}) => {
   return (
     <div className="w-full h-screen overflow-hidden">
       <NavBar current="entries" />
-      <div className="row h-[93.7vh] w-full">
+      <div className="row h-[100vh] w-full bg-brown">
         <div className="row h-1/6 flex w-full">
           <div className="h-full w-1/12 flex"></div>
 
           <div className="h-full w-10/12 flex items-end">
-            <div className="text-left font-sans pl-4 font-bold text-5xl pb-3">
+            <div className="text-left font-sans pl-4 font-bold text-5xl pb-3 text-white">
               Past Entries
             </div>
             <div className="flex-1" />
@@ -173,14 +173,14 @@ const Entries: React.FC<{}> = ({}) => {
                   style={{ fontSize: "3rem", color: "#65C466" }}
                 />
               </IconButton>
-              <MyModal open={isModalOpen} onClose={handleCloseModal} setModalOpen={setModalOpen}/>
+              <MyModal open={isModalOpen} onClose={handleCloseModal} setModalOpen={setModalOpen} setUserData={setUserData}/>
             </div>
           </div>
           <div className="h-full w-1/12 flex"></div>
         </div>
         <div className="row h-5/6 pb-2 flex w-full place-content-center">
           <div className="w-10/12 h-full box-content border-2 border-gray-200 rounded-3xl overflow-y-hidden">
-            <div className="w-full h-full m-auto overflow-y-auto">
+            <div className="w-full h-full m-auto overflow-y-auto bg-paper-brown">
               <div className="w-11/12 h-full m-auto mb-5">
                 {entries.map((entry, index) => (
                   <EntryCard date={entry.date.toString()} title={entry.title} entry={entry.entry} mood={entry.mood} swatch={togSwitch}/>

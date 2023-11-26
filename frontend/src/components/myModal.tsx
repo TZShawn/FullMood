@@ -10,11 +10,12 @@ interface MyModalProps {
   open: boolean;
   setModalOpen: any;
   onClose: () => void;
+  setUserData: any
 }
 
 axios.defaults.baseURL = "http://localhost:4000";
 
-const MyModal: React.FC<MyModalProps> = ({ open, setModalOpen, onClose }) => {
+const MyModal: React.FC<MyModalProps> = ({ open, setModalOpen, onClose, setUserData }) => {
   const [title, setTitle] = React.useState("")
   const [entry, setEntry] = React.useState("")
 
@@ -31,7 +32,8 @@ const MyModal: React.FC<MyModalProps> = ({ open, setModalOpen, onClose }) => {
       };
       console.log(formData)
 
-      axios.post('/entry', formData)
+      let newProfile = await axios.post('/entry', formData).then(re => re.data)
+      setUserData(newProfile)
       setModalOpen(false)
 
     } catch (error) {
