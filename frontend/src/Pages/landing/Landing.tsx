@@ -8,8 +8,8 @@ const Landing: React.FC<{}> = () => {
   const [isModalOpen, setIsModalOpen] = React.useState(false)
   return (
     <div className="overflow-hidden">
-      <NavBar />
-      <div className="w-full h-[93.7vh] bg-background-brown flex overflow-hidden	">
+      <NavBar current="landing"/>
+      <div className="w-full h-[100vh] bg-background-brown flex overflow-hidden	">
         <div className="w-5/12 p-8 grid grid-cols">
           <div className="place-self-center pr-8 p-12 bg-brown-200 rounded-xl">
             <img src={login_image} className="drop-shadow-2xl"></img>

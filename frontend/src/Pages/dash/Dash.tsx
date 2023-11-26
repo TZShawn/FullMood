@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -11,6 +11,13 @@ import ClearIcon from "@mui/icons-material/Clear";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import NavBar from "../../NavBar";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+axios.defaults.baseURL = "http://localhost:4000";
+
 interface IToDoCard {
   text: string;
   id: number;
@@ -40,31 +47,59 @@ const AddTodo: React.FC<{ todoEdit: boolean; setTodoEdit: any }> = ({
   setTodoEdit,
 }) => {
   const [text, setText] = React.useState("");
+  const { profile } = useSelector((state: any) => state.profile);
 
-  const handleCheckClick = () => {
-
-  }
+  const handleCheckClick = async () => {
+    console.log(text);
+    await axios.post("/todo", { delete: false, todo: text, name: profile });
+    setTodoEdit(false);
+  };
 
   const handleClearClick = () => {
-     setTodoEdit(!todoEdit)
-  }
-  return(
-  <div className="w-full flex px-4">
-    <input type="textfield" className="w-full border-2 border-black bg-paper-brown outline-none" onChange={(e) => setText(e.target.value)}/>
-    <div onClick={(e) => handleCheckClick()}><CheckIcon /></div>
-    <div onClick={(e) => handleClearClick()}><ClearIcon /></div>
-  </div>);
+    setTodoEdit(!todoEdit);
+  };
+  return (
+    <div className="w-full flex px-4">
+      <input
+        type="textfield"
+        className="w-full border-2 border-black bg-paper-brown outline-none"
+        onChange={(e) => setText(e.target.value)}
+      />
+      <div onClick={(e) => handleCheckClick()}>
+        <CheckIcon />
+      </div>
+      <div onClick={(e) => handleClearClick()}>
+        <ClearIcon />
+      </div>
+    </div>
+  );
 };
 
 const Dash: React.FC<{}> = () => {
-  const todoItems = [
-    { text: "Work out1", done: false },
-    { text: "Work out2", done: true },
-    { text: "Work out3", done: false },
-    { text: "Work out4", done: false },
-    { text: "Work out5", done: false },
-    { text: "Work out6", done: false },
-  ];
+  const { profile } = useSelector((state: any) => state.profile);
+  let navigate = useNavigate();
+
+  if (profile == 0) {
+    navigate("/");
+  }
+  console.log("ASADAS");
+
+  const [userData, setUserData] = React.useState<{todo: any[], entrys: any[], username: string} | undefined>(undefined)
+
+  useEffect(() => {
+    axios
+      .post("/getprofile", { name: profile })
+      .then((res) => {
+        if ((res.status = 200)) {
+          console.log(res.data);
+            setUserData(res.data);
+        } else {
+          console.log(res.data);
+        }
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
 
   const options = {
     series: [
@@ -151,62 +186,65 @@ const Dash: React.FC<{}> = () => {
       },
     ],
   };
-
+  const todoItems = userData?.todo ?? []
   const happyStuff: string[] = [];
   const sadStuff: string[] = [];
 
   const [todoEdit, setTodoEdit] = React.useState(false);
   return (
-    <div className="w-full h-screen bg-background-brown">
-      <div className="flex h-4/7 pt-16 px-16">
-        <div className="w-5/12 m-2 bg-paper-brown border-black border-4 rounded-lg">
-          <div className="font-semibold text-lg p-3">Your Recent Moods</div>
-          <div className="m-auto">
-            <EChartsReact option={options} />
-          </div>
-        </div>
-        <div className="w-7/12 m-2 bg-paper-brown align-lefr border-black border-4 rounded-lg">
-          <div className="font-semibold text-lg p-3 pb-0">Calendar View</div>
-          <div className="w-full">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DateCalendar />
-            </LocalizationProvider>
-          </div>
-        </div>
-      </div>
-      <div className="flex h-72 px-16">
-        <div className="w-8/12 m-2 bg-paper-brown rounded-lg border-4 border-black">
-          <div className="font-semibold text-lg p-3">Reccomendations</div>
-          <div>
-            <div className="p-3 font-semibold text-lg">
-              Here are some things that made you happy!
+    <div>
+      <NavBar current="dashboard" />
+      <div className="w-full h-screen bg-background-brown">
+        <div className="flex h-4/7 pt-16 px-16">
+          <div className="w-5/12 m-2 bg-paper-brown border-black border-4 rounded-lg">
+            <div className="font-semibold text-lg p-3">Your Recent Moods</div>
+            <div className="m-auto">
+              <EChartsReact option={options} />
             </div>
-            {happyStuff.map((stuf) => {
-              return <div>{stuf}</div>;
+          </div>
+          <div className="w-7/12 m-2 bg-paper-brown align-lefr border-black border-4 rounded-lg">
+            <div className="font-semibold text-lg p-3 pb-0">Calendar View</div>
+            <div className="w-full">
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateCalendar />
+              </LocalizationProvider>
+            </div>
+          </div>
+        </div>
+        <div className="flex h-72 px-16">
+          <div className="w-8/12 m-2 bg-paper-brown rounded-lg border-4 border-black">
+            <div className="font-semibold text-lg p-3">Reccomendations</div>
+            <div>
+              <div className="p-3 font-semibold text-lg">
+                Here are some things that made you happy!
+              </div>
+              {happyStuff.map((stuf) => {
+                return <div>{stuf}</div>;
+              })}
+              <div className="p-3 font-semibold text-lg">
+                Here are some things that made you Sad
+              </div>
+              {sadStuff.map((stuf) => {
+                return <div>{stuf}</div>;
+              })}
+            </div>
+          </div>
+          <div className="w-4/12 m-2 bg-paper-brown rounded-lg border-4 overflow-y-auto border-black">
+            <div className="font-semibold text-lg p-3">Help Todo List</div>
+            {todoItems?.map((tod, key) => {
+              return <ToDoCard text={tod.name} id={key} done={tod.done} />;
             })}
-            <div className="p-3 font-semibold text-lg">
-              Here are some things that made you Sad
-            </div>
-            {sadStuff.map((stuf) => {
-              return <div>{stuf}</div>;
-            })}
+            {!todoEdit ? (
+              <div
+                className="w-full text-center mb-2 cursor-pointer hover:bg-mid-brown"
+                onClick={(e) => setTodoEdit(!todoEdit)}
+              >
+                <AddCircleOutlineIcon />
+              </div>
+            ) : (
+              <AddTodo todoEdit={todoEdit} setTodoEdit={setTodoEdit} />
+            )}
           </div>
-        </div>
-        <div className="w-4/12 m-2 bg-paper-brown rounded-lg border-4 overflow-y-auto border-black">
-          <div className="font-semibold text-lg p-3">Help Todo List</div>
-          {todoItems.map((tod, key) => {
-            return <ToDoCard text={tod.text} id={key} done={tod.done} />;
-          })}
-          {!todoEdit ? (
-            <div
-              className="w-full text-center mb-2 cursor-pointer hover:bg-mid-brown"
-              onClick={(e) => setTodoEdit(!todoEdit)}
-            >
-              <AddCircleOutlineIcon />
-            </div>
-          ) : (
-            <AddTodo todoEdit={todoEdit} setTodoEdit={setTodoEdit} />
-          )}
         </div>
       </div>
     </div>
