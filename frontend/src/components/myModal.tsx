@@ -7,24 +7,26 @@ import axios from 'axios';
 
 interface MyModalProps {
   open: boolean;
+  setModalOpen: any;
   onClose: () => void;
 }
 
-const MyModal: React.FC<MyModalProps> = ({ open, onClose }) => {
+const MyModal: React.FC<MyModalProps> = ({ open, setModalOpen, onClose }) => {
   const [title, setTitle] = React.useState("")
   const [entry, setEntry] = React.useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
     try {
-      const formData = {
-        //name: //todo,
-        title: title,
-        entry: entry,
-      };
+      // const formData = {
+      //   //name: //todo,
+      //   title: title,
+      //   entry: entry,
+      // };
 
-      const response = await axios.post('/entry', formData)
+      // const response = await axios.post('/entry', formData)
+      setModalOpen(false)
 
     } catch (error) {
       console.error('Error submitting entry:', error);

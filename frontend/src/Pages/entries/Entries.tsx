@@ -114,7 +114,7 @@ const Entries: React.FC<IEntries> = ({ entries }) => {
                   style={{ fontSize: "3rem", color: "#65C466" }}
                 />
               </IconButton>
-              <MyModal open={isModalOpen} onClose={handleCloseModal}/>
+              <MyModal open={isModalOpen} onClose={handleCloseModal} setModalOpen={setModalOpen}/>
             </div>
           </div>
           <div className="h-full w-1/12 flex"></div>
