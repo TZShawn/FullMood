@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 const NavBar: React.FC<{}> = ({}) => {
   let navigate = useNavigate();
   const routeChange = (currentPage: string) => {
-    let path = `newPath`;
+    let path = currentPage;
     navigate(path);
   };
   return (
@@ -14,13 +14,13 @@ const NavBar: React.FC<{}> = ({}) => {
       <div className="flex-1" />
       <div
         className="px-6 py-2 text-xl cursor-pointer font-semibold hover:bg-paper-brown"
-        onClick={(e) => routeChange("dashboard")}
+        onClick={(e) => routeChange("/dashboard")}
       >
         Dashboard
       </div>
       <div
         className="px-6 py-2 text-xl cursor-pointer font-semibold hover:bg-paper-brown"
-        onClick={(e) => routeChange("entrys")}
+        onClick={(e) => routeChange("/entries")}
       >
         Entrees
       </div>

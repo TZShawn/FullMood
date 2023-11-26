@@ -13,15 +13,21 @@ interface MyModalProps {
 const MyModal: React.FC<MyModalProps> = ({ open, onClose }) => {
   const [title, setTitle] = React.useState("")
   const [entry, setEntry] = React.useState("")
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('/api/submit', formData)
-      
+      const formData = {
+        //name: //todo,
+        title: title,
+        entry: entry,
+      };
+
+      const response = await axios.post('/entry', formData)
+
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error('Error submitting entry:', error);
     }
   }
 
