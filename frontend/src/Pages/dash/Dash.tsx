@@ -27,10 +27,9 @@ interface IToDoCard {
 
 const ToDoCard: React.FC<IToDoCard> = ({ text, id, done }) => {
   const [isChecked, setIsChecked] = React.useState(done);
+  const { profile } = useSelector((state: any) => state.profile);
 
   const handleClick = (text: string) => {
-    const { profile } = useSelector((state: any) => state.profile);
-
     console.log(text)
     axios.post('/todo', {todo: text, delete: true, name: profile})
   }
@@ -235,8 +234,14 @@ const Dash: React.FC<{}> = () => {
   let entry = ""
   let title = ""
   const todoItems = userData?.todo ?? [];
-  const happyStuff: string[] = userData?.positives ?? [];
-  const sadStuff: string[] = userData?.negatives ?? [];
+  let happyStuff: string[] = userData?.positives ?? [];
+  if (happyStuff.length > 3) {
+    happyStuff = happyStuff.slice(0,4)
+  }
+  let sadStuff: string[] = userData?.negatives ?? [];
+  if (sadStuff.length > 3) {
+    sadStuff = sadStuff.slice(0,4)
+  }
   const [selectedDate, setSelectedDate] = React.useState("")
   const [todoEdit, setTodoEdit] = React.useState(false);
 
@@ -281,20 +286,14 @@ console.log(date, entry, title)
           </div>
         </div>
         <div className="flex h-72 px-16">
-          <div className="w-8/12 m-2 bg-paper-brown rounded-lg border-4 border-black">
+          <div className="w-8/12 m-2 bg-paper-brown max-h-72 overflow-y-auto rounded-lg border-4 border-black">
             <div className="font-semibold text-lg p-3">Reccomendations</div>
             <div>
-              <div className="p-3 font-semibold text-lg">
+              <div className="p-3 pb-1 font-semibold text-lg">
                 Here are some things that made you happy!
               </div>
               {happyStuff.map((stuf) => {
-                return <div>{stuf}</div>;
-              })}
-              <div className="p-3 font-semibold text-lg">
-                Here are some things that made you Sad
-              </div>
-              {sadStuff.map((stuf) => {
-                return <div>{stuf}</div>;
+                return <div className="pl-3 px-1 font-md">{`- ${stuf}`}</div>;
               })}
             </div>
           </div>
