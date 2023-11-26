@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
-import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import EChartsReact from "echarts-for-react";
 import { Checkbox, TextField } from "@mui/material";
-
+import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import CheckIcon from "@mui/icons-material/Check";
 import ClearIcon from "@mui/icons-material/Clear";
-
+import dayjs, { Dayjs } from 'dayjs';
+import Badge from '@mui/material/Badge';
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import NavBar from "../../NavBar";
@@ -239,6 +239,7 @@ const Dash: React.FC<{}> = () => {
   const sadStuff: string[] = userData?.negatives ?? [];
   const [selectedDate, setSelectedDate] = React.useState("")
   const [todoEdit, setTodoEdit] = React.useState(false);
+  const [highlightedDays, setHighlightedDays] = React.useState<any>([]) //should be empty if no happy days.
 
   const entries = userData?.entrys ?? []
   let idx = -1 
@@ -252,6 +253,38 @@ const Dash: React.FC<{}> = () => {
   date = entries[idx]?.date ?? ""
   entry = entries[idx]?.entry ?? ""
   title = entries[idx]?.title ?? ""
+  
+  React.useEffect(() => {
+    // Create a new array with the filtered dates
+    const posEntries = entries.filter(entry => entry.mood.includes("Positive"))
+    const posDates = posEntries.map(entry => entry.date);
+    const posDays: number[] = [];
+    posDates.forEach( (date) => {
+      var splitted = date.split('/', 3);
+      posDays.push(Number(splitted[1]))
+    }
+    )
+    // Update the state with the new array
+    setHighlightedDays(posDays);
+  }, [entries]);
+
+  function ServerDay(props: PickersDayProps<Dayjs> & { highlightedDays?: number[] }) {
+    const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
+  
+    const isSelected =
+      !props.outsideCurrentMonth && highlightedDays.indexOf(props.day.date()) >= 0;
+  
+    return (
+      <Badge
+        key={props.day.toString()}
+        overlap="circular"
+        badgeContent={isSelected ? '🌚' : undefined}
+      >
+        <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day} />
+      </Badge>
+    );
+  }
+
 console.log(date, entry, title)
   return (
     <div>
@@ -268,7 +301,16 @@ console.log(date, entry, title)
             <div className="font-semibold text-lg p-3 pb-0">Calendar View</div>
             <div className="w-full">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateCalendar onChange={(e) => {
+                <DateCalendar 
+                slots={{
+                  day: ServerDay,
+                }}
+                slotProps={{
+                  day: {
+                    highlightedDays,
+                  } as any,
+                }}
+                onChange={(e) => {
                   // @ts-ignore
                   let value = String(e.$d).split(' ')
                   const finalDate = value[1]+"/"+value[2]+"/"+value[3]
