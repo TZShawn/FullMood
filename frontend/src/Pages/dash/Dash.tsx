@@ -124,7 +124,7 @@ const Dash: React.FC<{}> = () => {
   const entryData = userData?.entrys ?? []
 
   let moods = entryData.map(entr => entr.mood)
-  
+
   if (moods.length < 20) {
     moods = moods.slice(0, 20)
   }
@@ -246,7 +246,7 @@ const Dash: React.FC<{}> = () => {
   const [selectedDate, setSelectedDate] = React.useState("")
   const [todoEdit, setTodoEdit] = React.useState(false);
   const [highlightedDays, setHighlightedDays] = React.useState<any>([]) //should be empty if no happy days.
-
+  const [lowlightedDays, setLowlightedDays] = React.useState<any>([]) //should be empty if no happy days.
   const entries = userData?.entrys ?? []
   let idx = -1 
   let dateObj = new Date();
@@ -262,33 +262,66 @@ const Dash: React.FC<{}> = () => {
   
   React.useEffect(() => {
     // Create a new array with the filtered dates
-    const posEntries = entries.filter(entry => entry.mood.includes("Positive"))
+    const posEntries = entries.filter(entry => entry.mood.includes("Positive"));
+    const negEntries = entries.filter(entry => entry.mood.includes("Negative"));
+
     const posDates = posEntries.map(entry => entry.date);
+    const negDates = negEntries.map(entry => entry.date);
+
     const posDays: number[] = [];
     posDates.forEach( (date) => {
       var splitted = date.split('/', 3);
       posDays.push(Number(splitted[1]))
     }
     )
+    const negDays: number[] = [];
+    negDates.forEach( (date) => {
+      var splitted = date.split('/', 3);
+      negDays.push(Number(splitted[1]))
+    }
+    )
     // Update the state with the new array
     setHighlightedDays(posDays);
+    setLowlightedDays(negDays);
   }, [entries]);
 
-  function ServerDay(props: PickersDayProps<Dayjs> & { highlightedDays?: number[] }) {
+  function ServerDay(props: PickersDayProps<Dayjs> & { highlightedDays?: number[] } & {lowlightedDays?: number[] }) {
     const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
   
-    const isSelected =
-      !props.outsideCurrentMonth && highlightedDays.indexOf(props.day.date()) >= 0;
+    
+    if (!props.outsideCurrentMonth && highlightedDays.indexOf(props.day.date()) >= 0) {
+      return (
+        <Badge
+          key={props.day.toString()}
+          overlap="circular"
+          badgeContent={'✅'}
+        >
+          <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day} />
+        </Badge>
+      );
+    } else if (!props.outsideCurrentMonth && lowlightedDays.indexOf(props.day.date()) >= 0) {
+      return (
+        <Badge
+          key={props.day.toString()}
+          overlap="circular"
+          badgeContent={'🔴'}
+        >
+          <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day} />
+        </Badge>
+      );
+    } else {
+      return (
+        <Badge
+          key={props.day.toString()}
+          overlap="circular"
+          badgeContent={undefined}
+        >
+          <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day} />
+        </Badge>
+      );
+    }
   
-    return (
-      <Badge
-        key={props.day.toString()}
-        overlap="circular"
-        badgeContent={isSelected ? '🌚' : undefined}
-      >
-        <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day} />
-      </Badge>
-    );
+    
   }
 
   return (
@@ -313,6 +346,7 @@ const Dash: React.FC<{}> = () => {
                 slotProps={{
                   day: {
                     highlightedDays,
+                    lowlightedDays,
                   } as any,
                 }}
                 onChange={(e) => {
