@@ -58,6 +58,7 @@ const AddTodo: React.FC<{ todoEdit: boolean; setTodoEdit: any }> = ({
   const handleClearClick = () => {
     setTodoEdit(!todoEdit);
   };
+
   return (
     <div className="w-full flex px-4">
       <input
@@ -84,7 +85,15 @@ const Dash: React.FC<{}> = () => {
   }
   console.log("ASADAS");
 
-  const [userData, setUserData] = React.useState<{todo: any[], entrys: any[], username: string} | undefined>(undefined)
+  const [userData, setUserData] = React.useState<{
+        todo: any[];
+        entrys: any[];
+        negatives: any[];
+        positives: any[];
+        username: string;
+      }
+    | undefined
+  >(undefined);
 
   useEffect(() => {
     axios
@@ -92,13 +101,16 @@ const Dash: React.FC<{}> = () => {
       .then((res) => {
         if ((res.status = 200)) {
           console.log(res.data);
-            setUserData(res.data);
+          setUserData(res.data);
         } else {
           console.log(res.data);
         }
       })
       .catch((err) => console.log(err));
   }, []);
+
+  const entryData = userData?.entrys ?? []
+
 
 
   const options = {
@@ -116,10 +128,10 @@ const Dash: React.FC<{}> = () => {
           lineStyle: {
             width: 6,
             color: [
-              [0.25, "#FF6E76"],
-              [0.5, "#FDDD60"],
-              [0.75, "#58D9F9"],
-              [1, "#7CFFB2"],
+              [0.25, "#FF6961"],
+              [0.5, "#FF964F"],
+              [0.75, "#C4DEA4"],
+              [1, "#418134"],
             ],
           },
         },
@@ -186,9 +198,9 @@ const Dash: React.FC<{}> = () => {
       },
     ],
   };
-  const todoItems = userData?.todo ?? []
-  const happyStuff: string[] = [];
-  const sadStuff: string[] = [];
+  const todoItems = userData?.todo ?? [];
+  const happyStuff: string[] = userData?.positives ?? [];
+  const sadStuff: string[] = userData?.negatives ?? [];
 
   const [todoEdit, setTodoEdit] = React.useState(false);
   return (
