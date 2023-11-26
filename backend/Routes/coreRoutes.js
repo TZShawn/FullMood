@@ -68,7 +68,7 @@ router.post("/entry", async (req, res) => {
     data.positives = data.positives.concat(good)
     await userRef.update(data)
 
-    return res.json({ airesponse: messageText });
+    return res.status(200).json(data);
   } catch (error) {
     console.log(error);
   }
