@@ -1,12 +1,13 @@
-import React from "react"
+import React, { useState } from "react"
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/Button';
 import InfoIcon from '@mui/icons-material/Info';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import './Entries.css'; 
 import { Icon } from "@mui/material";
-import IOSSwitch from "../../Assets/IOSToggle";
+import IOSSwitch from "../../components/IOSToggle";
+import MyModal from "../../components/myModal";
 
 interface IEntry {
     date: string,
@@ -38,7 +39,6 @@ export const samEntry: IEntry = {
 };
 
 
-
 const EntryCard: React.FC<IEntry> = ({date, content}) => {
     return (
       <div className="w-full h-1/6 pt-3 m-auto">
@@ -50,21 +50,8 @@ const EntryCard: React.FC<IEntry> = ({date, content}) => {
             {content}
           </div>
           <div className="w-2/12 flex items-center justify-center">
-            <div className="btn drop-shadow-none">
-                <Button
-                style={{
-                    borderRadius: 10,
-                    backgroundColor: "#b08968",
-                    padding: "8px 16px",
-                    fontSize: "12px"
-                }}
-                disableElevation={true}
-                variant="contained"
-                endIcon={<InfoIcon />}
-                className="w-full h-full hover:bg-red-400"
-                >
-                  <div className="normal-case">View</div>
-                </Button>
+            <div className="py-1 px-4 font-bold text-white bg-paper-brown rounded-[30px] w-fit  hover:bg-mid-brown flex">
+              <div className="pr-1">View</div> <InfoIcon />
             </div>
           </div>
         </div>
@@ -74,6 +61,16 @@ const EntryCard: React.FC<IEntry> = ({date, content}) => {
 
 const Entries: React.FC<IEntries> = ({entries}) => {
     // Axios call to BE
+    const [isModalOpen, setModalOpen] = useState(false);
+
+    const handleOpenModal = () => {
+      setModalOpen(true);
+    };
+  
+    const handleCloseModal = () => {
+      setModalOpen(false);
+    };
+
     return (
       <div className="w-full h-screen ">
         <div className="row h-2/6 flex w-full">
@@ -85,13 +82,21 @@ const Entries: React.FC<IEntries> = ({entries}) => {
             </div>
             <div className="flex-1" />
             <div className="pb-3">
-              <IOSSwitch />
+              <FormControlLabel
+                value="start"
+                control={<IOSSwitch />}
+                label={<div className="pr-2 font-sans">Show Bad Days</div>}
+                labelPlacement="start"
+              />
             </div>
             <div className="btn ">
-                <IconButton>
-                  <AddCircleOutlineIcon style={{ fontSize: "3rem", color: "#65C466" }} />
-                </IconButton>
-              </div>
+              <IconButton onClick={handleOpenModal}>
+                <AddCircleOutlineIcon
+                  style={{ fontSize: "3rem", color: "#65C466" }}
+                />
+              </IconButton>
+              <MyModal open={isModalOpen} onClose={handleCloseModal} />
+            </div>
           </div>
           <div className="h-full w-1/12 flex"></div>
         </div>
