@@ -14,6 +14,7 @@ import { pink } from '@mui/material/colors';
 import Switch from '@mui/material/Switch';
 import axios from "axios";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 axios.defaults.baseURL = "http://localhost:4000";
 
@@ -66,6 +67,13 @@ interface IEntries {
 // };
 
 const EntryCard: React.FC<IEntry> = ({ date, title, entry, mood, swatch }) => {
+
+  const { profile } = useSelector((state: any) => state.profile);
+  let navigate = useNavigate();
+
+  if (profile == 0 || !profile) {
+    navigate("/");
+  }
 
   const [isViewOpen, setViewOpen] = useState(false);
   const handleOpenView = () => {
