@@ -23,15 +23,17 @@ interface IToDoCard {
   text: string;
   id: number;
   done: boolean;
+  setUserData: any
 }
 
-const ToDoCard: React.FC<IToDoCard> = ({ text, id, done }) => {
+const ToDoCard: React.FC<IToDoCard> = ({ text, id, done, setUserData }) => {
   const [isChecked, setIsChecked] = React.useState(done);
   const { profile } = useSelector((state: any) => state.profile);
 
-  const handleClick = (text: string) => {
+  const handleClick = async (text: string) => {
     console.log(text)
-    axios.post('/todo', {todo: text, delete: true, name: profile})
+    let newProfile = await axios.post('/todo', {todo: text, delete: true, name: profile}).then(res => res.data)
+    setUserData(newProfile)
   }
 
   return (
@@ -51,16 +53,18 @@ const ToDoCard: React.FC<IToDoCard> = ({ text, id, done }) => {
   );
 };
 
-const AddTodo: React.FC<{ todoEdit: boolean; setTodoEdit: any }> = ({ 
+const AddTodo: React.FC<{ todoEdit: boolean; setTodoEdit: any; setUserData: any }> = ({ 
   todoEdit,
   setTodoEdit,
+  setUserData
 }) => {
   const [text, setText] = React.useState("");
   const { profile } = useSelector((state: any) => state.profile);
 
   const handleCheckClick = async () => {
     console.log(text);
-    await axios.post("/todo", { delete: false, todo: text, name: profile });
+    let newProfile = await axios.post("/todo", { delete: false, todo: text, name: profile }).then(res => res.data);
+    setUserData(newProfile)
     setTodoEdit(false);
   };
 
@@ -92,7 +96,6 @@ const Dash: React.FC<{}> = () => {
   if (profile == 0) {
     navigate("/");
   }
-  console.log("ASADAS");
 
   const [userData, setUserData] = React.useState<{
         todo: any[];
@@ -132,7 +135,6 @@ const Dash: React.FC<{}> = () => {
     if (mood.includes('Negative')) {
       numbers += 0.25
     } else if (mood.includes("Neutral")) {
-      console.log("asdsa")
       numbers += 0.5
     } else if (mood.includes('Positive')) {
       numbers += 0.75
@@ -143,7 +145,6 @@ const Dash: React.FC<{}> = () => {
 
   numbers = numbers / moods.length
 
-  console.log(numbers)
   const [isViewOpen, setViewOpen] = useState(false);
   const options = {
     series: [
@@ -290,7 +291,6 @@ const Dash: React.FC<{}> = () => {
     );
   }
 
-console.log(date, entry, title)
   return (
     <div>
       <NavBar current="dashboard" />
@@ -342,7 +342,7 @@ console.log(date, entry, title)
           <div className="w-4/12 m-2 bg-paper-brown rounded-lg border-4 overflow-y-auto border-black">
             <div className="font-semibold text-lg p-3">Help Todo List</div>
             {todoItems?.map((tod, key) => {
-              return <ToDoCard text={tod.name} id={key} done={tod.done} />;
+              return <ToDoCard text={tod.name} id={key} done={tod.done} setUserData={setUserData} />;
             })}
             {!todoEdit ? (
               <div
@@ -352,7 +352,7 @@ console.log(date, entry, title)
                 <AddCircleOutlineIcon />
               </div>
             ) : (
-              <AddTodo todoEdit={todoEdit} setTodoEdit={setTodoEdit} />
+              <AddTodo todoEdit={todoEdit} setTodoEdit={setTodoEdit} setUserData={setUserData}/>
             )}
           </div>
         </div>
