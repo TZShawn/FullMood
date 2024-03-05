@@ -11,11 +11,12 @@ interface MyModalProps {
   setModalOpen: any;
   onClose: () => void;
   setUserData: any
+  entryToday: boolean
 }
 
 axios.defaults.baseURL = "http://localhost:4000";
 
-const MyModal: React.FC<MyModalProps> = ({ open, setModalOpen, onClose, setUserData }) => {
+const MyModal: React.FC<MyModalProps> = ({ open, setModalOpen, onClose, setUserData, entryToday }) => {
   const [title, setTitle] = React.useState("")
   const [entry, setEntry] = React.useState("")
 
@@ -30,7 +31,6 @@ const MyModal: React.FC<MyModalProps> = ({ open, setModalOpen, onClose, setUserD
         title: entry,
         entry: title,
       };
-      console.log(formData)
 
       let newProfile = await axios.post('/entry', formData).then(re => re.data)
       setUserData(newProfile)
@@ -68,9 +68,11 @@ const MyModal: React.FC<MyModalProps> = ({ open, setModalOpen, onClose, setUserD
           variant="outlined" 
           onChange={(e) => setTitle(e.target.value)}/>
           <div className='flex mt-5 flex-col'>
-            <button onClick={handleSubmit} className="flex-1 py-1 px-4 m-auto font-bold text-white bg-paper-brown rounded-[30px] w-fit hover:bg-palette-green flex">Done!</button>
+            <button disabled={entryToday} onClick={handleSubmit} className="flex-1 py-1 px-4 m-auto font-bold text-white bg-paper-brown rounded-[30px] w-fit hover:bg-palette-green flex">Done!</button>
           </div>
-          
+          {entryToday == true &&
+              <div>You already have an entry today</div>
+          }
         </div>
       </div>
       </DialogContent>

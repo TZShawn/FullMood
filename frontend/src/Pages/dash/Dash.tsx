@@ -243,6 +243,8 @@ const Dash: React.FC<{}> = () => {
   if (sadStuff.length > 3) {
     sadStuff = sadStuff.slice(0,4)
   }
+  const nowDate = new Date()
+  const [currentMonth, setCurrentMonth] = useState<any>(nowDate.getMonth() + 1)
   const [selectedDate, setSelectedDate] = React.useState("")
   const [todoEdit, setTodoEdit] = React.useState(false);
   const [highlightedDays, setHighlightedDays] = React.useState<any>([]) //should be empty if no happy days.
@@ -260,30 +262,40 @@ const Dash: React.FC<{}> = () => {
   entry = entries[idx]?.entry ?? ""
   title = entries[idx]?.title ?? ""
   
-  React.useEffect(() => {
-    // Create a new array with the filtered dates
-    const posEntries = entries.filter(entry => entry.mood.includes("Positive"));
-    const negEntries = entries.filter(entry => entry.mood.includes("Negative"));
 
+  const mapNumtoMonth = (num: number) => {
+    const map = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    return map[num]
+  }
+
+  useEffect(() => {
+    // Create a new array with the filtered dates
+    const posEntries: any[] = entries.filter(entry => entry.mood.includes("Positive") || entry.mood.includes("Super positive"));
+    const negEntries: any[] = entries.filter(entry => entry.mood.includes("Negative") || entry.mood.includes("Super negative"));
     const posDates = posEntries.map(entry => entry.date);
     const negDates = negEntries.map(entry => entry.date);
 
     const posDays: number[] = [];
+
     posDates.forEach( (date) => {
       var splitted = date.split('/', 3);
-      posDays.push(Number(splitted[1]))
+      if (splitted[0] == mapNumtoMonth(currentMonth - 1)) {
+        posDays.push(Number(splitted[1]))
+      }
     }
     )
     const negDays: number[] = [];
     negDates.forEach( (date) => {
       var splitted = date.split('/', 3);
-      negDays.push(Number(splitted[1]))
+      if (splitted[0] == mapNumtoMonth(currentMonth - 1)) {
+        negDays.push(Number(splitted[1]))
+      }
     }
     )
     // Update the state with the new array
     setHighlightedDays(posDays);
     setLowlightedDays(negDays);
-  }, [entries]);
+  }, [entries, currentMonth]);
 
   function ServerDay(props: PickersDayProps<Dayjs> & { highlightedDays?: number[] } & {lowlightedDays?: number[] }) {
     const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
@@ -342,6 +354,9 @@ const Dash: React.FC<{}> = () => {
                 <DateCalendar 
                 slots={{
                   day: ServerDay,
+                }}
+                onMonthChange={(month: any) => {
+                  setCurrentMonth(month.$M + 1)
                 }}
                 slotProps={{
                   day: {

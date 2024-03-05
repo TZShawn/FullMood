@@ -82,9 +82,9 @@ const EntryCard: React.FC<IEntry> = ({ date, title, entry, mood, swatch }) => {
 
   let color = "bg-slate-200"
 
-  if (mood.includes("Negative") && swatch) {
+  if ((mood.includes("Negative") || mood.includes("Super negative")) && swatch) {
     color = "bg-red-300"
-  } else if (mood.includes("Positive")) {
+  } else if (mood.includes("Positive") || mood.includes("Super positive")) {
     color = "bg-green-300"
   }
 
@@ -160,6 +160,25 @@ const Entries: React.FC<{}> = ({}) => {
   const handleCloseModal = () => {
     setModalOpen(false);
   };
+
+  let usedEntry = false
+
+  const map = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+  entries.forEach((entry) => {
+    const entryDate = entry.date.split('/')
+    const newDate = new Date()
+    let day = newDate.getDate().toString()
+    if (day.length == 1) {
+      day = '0' + day
+    }
+    const month: number = newDate.getMonth()
+    const year = newDate.getFullYear()
+    if (entryDate[1] == day && entryDate[0] == map[month] && entryDate[2] == year.toString()) {
+      usedEntry = true
+    }
+  })
+
   return (
     <div className="w-full h-screen overflow-hidden">
       <NavBar current="entries" />
@@ -181,7 +200,7 @@ const Entries: React.FC<{}> = ({}) => {
                   style={{ fontSize: "3rem", color: "#65C466" }}
                 />
               </IconButton>
-              <MyModal open={isModalOpen} onClose={handleCloseModal} setModalOpen={setModalOpen} setUserData={setUserData}/>
+              <MyModal open={isModalOpen} onClose={handleCloseModal} setModalOpen={setModalOpen} setUserData={setUserData} entryToday={usedEntry}/>
             </div>
           </div>
           <div className="h-full w-1/12 flex"></div>
